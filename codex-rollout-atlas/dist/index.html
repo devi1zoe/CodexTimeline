@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Codex Rollout Atlas：在浏览器本地解析并可视化 Codex CLI 原生 rollout JSONL。"
+    />
+    <title>Codex Rollout Atlas</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-a" aria-hidden="true"></div>
+    <div class="ambient ambient-b" aria-hidden="true"></div>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" role="img">
+              <path d="M6 6h20v20H6z" />
+              <path d="M11 11h4v4h-4zm6 0h4v4h-4zm-6 6h4v4h-4zm6 0h4v4h-4z" />
+            </svg>
+          </div>
+          <div>
+            <p class="eyebrow">LOCAL ROLLOUT INSPECTOR</p>
+            <h1>Codex Rollout Atlas</h1>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="privacy-pill" title="所有解析均在当前浏览器中完成">
+            <span class="status-dot"></span>
+            本地解析 · 零上传
+          </div>
+          <button class="button button-ghost" id="resetDemoButton" type="button">
+            人工示例
+          </button>
+          <button class="button button-primary" id="openFilesButton" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5M5 14v5h14v-5" /></svg>
+            导入 JSONL
+          </button>
+          <input id="fileInput" type="file" accept=".jsonl,.json,.zst" multiple hidden />
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="session-rail" aria-label="会话列表">
+          <div class="rail-heading">
+            <div>
+              <span class="section-kicker">SESSIONS</span>
+              <h2>会话</h2>
+            </div>
+            <span class="count-badge" id="sessionCount">0</span>
+          </div>
+
+          <label class="search-box" for="sessionSearch">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6" /><path d="m16 16 4 4" /></svg>
+            <input id="sessionSearch" type="search" placeholder="搜索 ID、目录或来源" autocomplete="off" />
+          </label>
+
+          <div class="session-list" id="sessionList"></div>
+
+          <div class="drop-zone" id="dropZone" tabindex="0" role="button" aria-label="拖入 rollout JSONL 文件">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 11h18v14H7z" /><path d="M11 7h10v4H11zm5 8v6m-3-3 3 3 3-3" /></svg>
+            <strong>拖入 rollout 文件</strong>
+            <span>.jsonl / bundle.json</span>
+          </div>
+
+          <div class="rail-note">
+            <span class="rail-note-icon" aria-hidden="true">i</span>
+            <p>Rollout 可能含提示词、路径、命令输出和密钥。页面只在本机读取，不修改源文件，也不发起网络请求。</p>
+          </div>
+        </aside>
+
+        <section class="content-pane">
+          <div class="session-hero" id="sessionHero">
+            <div class="hero-copy">
+              <div class="hero-title-row">
+                <span class="live-tag" id="sessionSource">DEMO</span>
+                <span class="hero-file" id="sessionFile">—</span>
+              </div>
+              <h2 id="sessionTitle">选择一个会话</h2>
+              <p id="sessionSubtitle">导入 Codex 日志，查看文件中保存的模型消息、工具请求与结果。</p>
+            </div>
+            <button class="icon-button" id="sessionInfoButton" type="button" aria-label="查看会话元数据" aria-expanded="false">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 11v6m0-10h.01" /></svg>
+            </button>
+          </div>
+
+          <div class="metadata-drawer" id="metadataDrawer" hidden></div>
+
+          <div class="metric-grid" id="metricGrid" aria-label="会话统计"></div>
+
+          <div class="toolbar">
+            <label class="event-search" for="eventSearch">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6" /><path d="m16 16 4 4" /></svg>
+              <input id="eventSearch" type="search" placeholder="搜索事件、命令、消息、call_id…" autocomplete="off" />
+              <kbd>/</kbd>
+            </label>
+            <div class="toolbar-separator" aria-hidden="true"></div>
+            <div class="filter-row" id="categoryFilters" aria-label="事件类型筛选"></div>
+            <button class="button button-compact button-ghost" id="collapseAllButton" type="button">全部收起</button>
+          </div>
+
+          <div class="result-bar">
+            <p id="resultSummary">等待载入事件</p>
+            <div class="legend" aria-label="时间线图例">
+              <span><i class="legend-dot legend-tool"></i>工具</span>
+              <span><i class="legend-dot legend-security"></i>安全</span>
+              <span><i class="legend-dot legend-context"></i>上下文</span>
+            </div>
+          </div>
+
+          <div class="timeline" id="timeline" aria-live="polite"></div>
+          <div class="load-more-wrap" id="loadMoreWrap" hidden>
+            <button class="button button-ghost" id="loadMoreButton" type="button">继续显示</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
